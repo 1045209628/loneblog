@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+
+</head>
+
+<body class="d-flex flex-column h-100">
+    <div th:replace="temp/templates::navbar"></div>
+    <div class="container">
+
+        <div style="font-size: 80px;font-weight: bold;">405</div>
+        <div style="font-size: 40px;">请求方法错误/(ㄒoㄒ)/~~</div>
+        <div><button onclick="javasript:location.href='/home'" class="btn btn-secondary">返回首页</button></div>
+    </div>
+
+    <div th:replace="temp/templates::footer"></div>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+</body>
+
+</html>

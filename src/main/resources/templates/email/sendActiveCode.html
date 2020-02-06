@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客账户激活</title>
+
+</head>
+
+<body>
+    <h3>lone博客账户激活</h3>
+    <p th:text="尊敬的 + ${username} + 您在lone博客注册了一个新的账户，点击下方链接进行激活，并妥善保管好您的邮箱"></p>
+    <a th:href="${url}" th:text="${url}" ></a><br>
+    <span>(如果上面不是链接形式，请将该地址手工粘贴到浏览器地址栏再访问)</span>
+    <p style="color: gray;">本邮件由系统自动发送，请勿直接回复！</p>
+</body>
+
+</html>

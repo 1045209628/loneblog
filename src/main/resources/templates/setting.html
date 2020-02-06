@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/simplePagination.css" rel="stylesheet">
+    <link href="/static/css/blogItem.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+    <link href="/static/css/zico.css" rel="stylesheet">
+    <link href="/static/css/uploadAvatar.css" rel="stylesheet">
+    <link href="/static/css/user.css" rel="stylesheet">
+
+     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+     <script src="/static/js/jquery-3.4.1.js"></script>
+     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+     <script src="/static/js/bootstrap.bundle.js"></script>
+     <script src="/static/js/nav.js"></script>
+     <script src="/static/js/jquery.simplePagination.js"></script>
+     <script src="/static/js/blogList.js"></script>
+     <script src="/static/js/user.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div th:replace="temp/templates::navbar"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{'/user/'+${user.id}}">用户主页</a></li>
+                            <li class="breadcrumb-item"><a href="">设置</a></li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-auto">
+                            <ul class="nav nav-pills flex-column mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#user-profile" data-toggle="pill" role="tab"
+                                        aria-selected="true">个人资料</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#user-avatar" data-toggle="pill"
+                                        aria-selected="false">修改头像</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="#user-edit" role="tab"
+                                        aria-selected="false">修改资料</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content col">
+                            <div class="tab-pane fade show active" id="user-profile" role="tabpanel">
+                                <div>
+                                    <div class="position-relative float-left">
+                                        <img th:if="${user.avatarUrl} == null" class="avatarSqr"
+                                            src="/static/img/default_avatar.jpg">
+                                        <img th:if="${user.avatarUrl}" class="avatarSqr" th:src="${user.avatarUrl}">
+                                    </div>
+                                    <div class="position-relative"
+                                        style="margin-left: 170px; height: 150px; padding-top: 15px;">
+                                        <p class="h3" th:text="${user.username}"></p>
+                                        <p class="h5">简介：</p>
+                                        <p th:if="${user.description==null}" style="color: gray;">
+                                            这个人很懒什么都没写</p>
+                                        <p th:if="${user.description}" style="color: gray;"
+                                            th:text="${user.description}">
+                                        </p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <!-- <h6>文章数量： <span>3</span></h6>
+                                    <h6>评论数量： <span>3</span></h6>
+                                    <h6>收藏数量： <span>3</span></h6>
+                                    <h6>点赞数量： <span>3</span></h6> -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade mx-auto" id="user-avatar" role="tabpanel">
+                                <div class="text-center">
+                                    <div>
+                                        <div>
+                                            <img th:if="${session.USER_SESSION?.avatarUrl} == null" class="avatarSqr"
+                                                src="/static/img/default_avatar.jpg" id="pre_avatar">
+                                            <img th:if="${session.USER_SESSION?.avatarUrl}" class="avatarSqr"
+                                                th:src="${session.USER_SESSION?.avatarUrl}" id="pre_avatar">
+                                            <p>当前头像</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="avatarWrapper">
+                                            <img src="" class="avatarSqr" style="margin: 0;" id="upload_avatar">
+                                            <span class="uploadSpan">点击选择图片</span>
+                                            <input type="file" id="picture" class="fileBtn" accept="image/*"
+                                                onchange="showImg(this);">
+                                        </div>
+                                        <div>
+                                            <p class="desc">请选择图片上传：每次只能选择一张图片 大小120 * 120像素支持JPG、PNG等格式，图片需小于5M</p>
+                                            <button type="submit" class="btn btn-success"
+                                                onclick="uploadPicture();">上传</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="user-edit" role="tabpanel">
+                                <div>
+                                    <div class="position-relative float-left">
+                                        <img th:if="${user.avatarUrl} == null" class="avatarSqr"
+                                            src="/static/img/default_avatar.jpg">
+                                        <img th:if="${user.avatarUrl}" class="avatarSqr" th:src="${user.avatarUrl}">
+                                    </div>
+                                    <div class="position-relative"
+                                        style="margin-left: 170px; height: 150px; padding-top: 15px;">
+                                        <p class="h3" th:text="${user.username}"></p>
+                                        <p class="h5">简介：</p>
+                                        <div class="text_container">
+                                            <textarea th:text="${user.description}" maxlength="200" cols="50" rows="6"></textarea>
+                                            <button class="btn btn-info submit" type="submit" onclick="uploadUserDesc();">修改简介</button>
+                                        </div>
+                                        </p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <h6>文章数量： <span>3</span></h6>
+                                    <h6>评论数量： <span>3</span></h6>
+                                    <h6>收藏数量： <span>3</span></h6>
+                                    <h6>点赞数量： <span>3</span></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div th:replace="temp/templates::userbar"></div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="temp/templates::login-modal"></div>
+    <div th:replace="temp/templates::footer"></div>
+
+   
+    <script th:inline="javascript">
+        var userId = /*[[${user.id}]]*/ -1;
+        var username = /*[[${user.username}]]*/ null;
+        var sessionUserId = /*[[${session.USER_SESSION?.id}]]*/ -1;
+        function listTitle(title, suffix) {
+            if (sessionUserId == userId)
+                $('#listname').addClass('h1').text("我的" + suffix);
+            else
+                $('#listname').addClass('h1').text(username + "的" + suffix);
+        }
+        $(document).ready(function () {
+            $('#com-link')[0].href="/user/"+userId+"/comments";
+            initCss();
+            paginator.setDOM({ listDOM: $('#list'), pagesDOM: $('#pagewrapper') }).initBlogList("/blog/user/" + userId);
+            listTitle(null, '博客');
+            userbarScroll();
+        });
+    </script>
+</body>
+
+</html>

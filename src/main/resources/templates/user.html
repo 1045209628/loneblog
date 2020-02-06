@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/simplePagination.css" rel="stylesheet">
+    <link href="/static/css/blogItem.css" rel="stylesheet">
+    <link href="/static/css/zico.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+    <link href="/static/css/user.css" rel="stylesheet">
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div th:replace="temp/templates::navbar"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div id="blog-tab">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#myblog"
+                                id="myblog">我的博客</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#collections"
+                                id="collections">收藏(<span th:text="${collectionCount}"></span>)</a></li>
+                    </ul>
+                </div>
+                <div id="blog-list" class="tab-content">
+                    <div id="listwrapper" class="tab-pane show fade active">
+                        <div id="list">
+                        </div>
+
+                        <ul id="pagewrapper">
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div th:replace="temp/templates::userbar"></div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="temp/templates::login-modal"></div>
+    <div th:replace="temp/templates::footer"></div>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script src="/static/js/nav.js"></script>
+    <script src="/static/js/jquery.simplePagination.js"></script>
+    <script src="/static/js/blogList.js"></script>
+    <script src="/static/js/user.js"></script>
+    <script th:inline="javascript">
+        var userId = /*[[${user.id}]]*/ -1;
+        var username = /*[[${user.username}]]*/ null;
+        var sessionUserId = /*[[${session.USER_SESSION?.id}]]*/ -1;
+        var manager = /*[[${manager}]]*/ false;
+        function listTitle() {
+            if (sessionUserId == userId)
+                $('#myblog').text("我的博客");
+            else
+                $('#myblog').text(username + "的博客");
+        }
+
+        function initPage() {
+
+            paginator.setDOM({
+                listDOM: $('#list'),
+                pagesDOM: $('#pagewrapper'),
+                manager: manager
+            }).initBlogList("/blog/user/" + userId);
+            $('#myblog').click(function () {
+                paginator.initBlogList("/blog/user/" + userId);
+            });
+            $('#collections').click(function () {
+                paginator.initBlogList("/blog/collection/" + userId);
+            });
+            listTitle();
+            if(manager)
+            $('#collections').addClass('disabled');
+        }
+        $(document).ready(function () {
+            $('#com-link')[0].href = "/user/" + userId + "/comments";
+            initCss();
+            initPage();
+            userbarScroll();
+        });
+    </script>
+</body>
+
+</html>

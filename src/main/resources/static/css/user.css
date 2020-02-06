@@ -1,0 +1,34 @@
+#userbar {
+    border: solid 1px rgb(189, 189, 189);
+    padding: 15px;
+    margin: 15px;
+    width: 320px;
+    min-height: 400px;
+    height: auto;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+textarea {
+    resize: none;
+    width: 100% !important;
+    height: 60px;
+}
+
+.text_container {
+    position: relative;
+    margin-right: 75px;
+}
+
+.submit{
+    position: absolute;
+    top: 0;
+    right: -70px;
+    width: 60px;
+    height: 60px;
+    padding-left: 7px;
+    padding-right: 7px;
+    text-align: center;
+}

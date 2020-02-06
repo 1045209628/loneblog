@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href="/css/bootstrap.css" rel="stylesheet">
+	<link href="/css/wangEditor.css" rel="stylesheet">
+
+
+
+	<title>lone博客</title>
+</head>
+
+<body>
+
+
+	<nav th:fragment="navbar" class="navbar navbar-expand-md navbar-dark bg-dark">
+		<div class="container-fluid justify-content-between">
+			<a class="navbar-brand" style="font-size: 30px;" th:href="@{/home}">lone</a>
+			<div th:unless="${session.USER_SESSION}" class="navbar-nav">
+				<a class="nav-item nav-link" href="#" onclick="loginModal();">登录</a>
+				<a class="nav-item nav-link" th:href="@{/passport/register/page}">注册</a>
+			</div>
+			<div th:if="${session.USER_SESSION}" class="navbar-nav">
+				<a class="nav-item mx-2" th:href="@{'/user/'+${session.USER_SESSION.id}}"> <img class="imgCir"
+						th:unless="${session.USER_SESSION.avatarUrl}" src="/static/img/default_avatar.jpg" /> <img
+						class="imgCir" th:if="${session.USER_SESSION.avatarUrl}"
+						th:src="${session.USER_SESSION.avatarUrl}" />
+				</a> <a class="nav-item nav-link my-auto mx-2" style="font-size: 20px;"
+					th:href="@{'/user/'+${session.USER_SESSION.id}}" th:text="${session.USER_SESSION.username}"></a> <a
+					class="nav-item nav-link my-auto mx-2" style="font-size: 20px;" target="_blank"
+					th:href="@{/user/edit}">写博客</a> <a class="nav-item nav-link my-auto mx-2" style="font-size: 20px;"
+					href="#" onclick="logout();">注销</a>
+			</div>
+		</div>
+	</nav>
+
+	<!--登录模态框-->
+	<div th:fragment="login-modal" class="modal fade" id="login-modal" style="display: none;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="modal-title">选择登录方式(点击图标进行登录)</h4>
+				</div>
+				<div class="modal-body">
+					<div class="text-center">
+						通过GitHub授权登录 <a style="color: black;" th:href="@{https://github.com/login/oauth/authorize?client_id=3f42c5693ff0295d31c9&redirect_uri=http://__${#request.serverName}__/oauth/callback}">
+							<i class="zi zi_tmGithubsquare zi_3x" zico="githubsquare"></i>
+						</a>
+					</div>
+					<div class="text-center">
+						通过注册的账号进行登录 <a style="color: black;"
+							th:href="@{/passport/login/page}"> <i
+							class="zi zi_circleRights zi_3x" zico="圆右箭头"></i>
+						</a>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+  </div>
+  
+  <div th:fragment="userbar" id="userbar" class="text-center">
+    <a th:href="@{'/user/'+${user.id}}">
+        <img class="avatarSqr" th:unless="${user.avatarUrl}" src="/static/img/default_avatar.jpg" />
+        <img class="avatarSqr" th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" />
+    </a>
+    <p th:text="${user.username}"></p>
+    <hr>
+    <div>
+        <p>简介：</p>
+        <p th:if="${user.description==null}" style="color: gray;">这个人很懒什么都没写</p>
+        <p th:if="${user.description}" th:text="${user.description}"></p>
+    </div>
+    <hr>
+    <div>
+        <a class="card-link" id="com-link" href=""><span>评论</span></a>
+	</div>
+	
+    <div th:if="${session.USER_SESSION?.id eq user?.id}">
+		<hr>
+		<div>
+			<a href="/user/manager"
+				><span>博客管理</a>
+		</div>
+        <hr>
+        <div >
+            <a class="card-link" href="/user/setting"><span>用户设置</span></a>
+        </div>
+    </div>
+	</div>
+
+
+	<footer th:fragment="footer" class="mt-auto py-3 text-center">
+		<span>Copyright © 2019 · lone博客 · <a
+			href="https://github.com/1045209628">依然沉默</a></span>
+	</footer>
+
+
+
+
+	<script src="/js/jquery-3.4.1.js"></script>
+	<script src="/js/wangEditor.js"></script>
+	<script src="/js/bootstrap.bundle.js"></script>
+</body>
+
+</html>

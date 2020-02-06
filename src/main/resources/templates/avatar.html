@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/simplePagination.css" rel="stylesheet">
+    <link href="/static/css/blogItem.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+    <link href="/static/css/uploadAvatar.css" rel="stylesheet">
+    <link href="/static/css/zico.css" rel="stylesheet">
+
+    <style>
+        #userbar {
+            border: solid 1px rgb(189, 189, 189);
+            padding: 15px;
+            margin: 15px;
+            width: 320px;
+            min-height: 400px;
+            height: auto;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div th:replace="temp/templates::navbar"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/user/setting">用户设置</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">修改头像</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="text-center">
+                    <div>
+                        <div>
+                            <img th:if="${session.USER_SESSION?.avatarUrl} == null" class="avatarSqr"
+                                src="/static/img/default_avatar.jpg" id="pre_avatar">
+                            <img th:if="${session.USER_SESSION?.avatarUrl}" class="avatarSqr"
+                                th:src="${session.USER_SESSION?.avatarUrl}" id="pre_avatar">
+                            <p>当前头像</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="avatarWrapper">
+                            <img src="" class="avatarSqr" style="margin: 0;" id="upload_avatar">
+                            <span class="uploadSpan">点击选择图片</span>
+                            <input type="file" id="picture" class="fileBtn" accept="image/*" onchange="showImg(this);">
+                        </div>
+                        <div>
+                            <p class="desc">请选择图片上传：每次只能选择一张图片 大小120 * 120像素支持JPG、PNG等格式，图片需小于5M</p>
+                            <button type="submit" class="btn btn-success" onclick="uploadPicture();">上传</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div id="userbar" class="text-center">
+                    <a th:href="@{'/user/'+${user.id}}">
+                        <img class="avatarSqr" th:unless="${user.avatarUrl}" src="/static/img/default_avatar.jpg" />
+                        <img class="avatarSqr" th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" />
+                    </a>
+                    <p th:text="${user.username}"></p>
+                    <hr>
+                    <div>
+                        <p>简介：</p>
+                        <p th:if="${user.description==null}" style="color: gray;">这个人很懒什么都没写</p>
+                        <p th:if="${user.description}" th:text="${user.description}"></p>
+                    </div>
+                    <hr>
+                    <div>
+                        <a href="#collection"
+                            onclick="javascript:paginator.initBlogList('/blog/collection/' + userId);listTitle(null,'收藏');"><span>收藏的博客</span>(<span
+                                th:text="${colCount}"></span>)</a>
+                    </div>
+                    <hr>
+                    <div>
+                        <a class="card-link" href="#"><span>评论</span>(<span th:text="1"></span>)</a>
+                    </div>
+
+                    <div class="user_setting" th:if="${session.USER_SESSION?.id eq user?.id}">
+                        <hr>
+                        <div>
+                            <a class="card-link" href="/user/setting"><span>用户设置</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="temp/templates::login-modal"></div>
+    <div th:replace="temp/templates::footer"></div>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script src="/static/js/nav.js"></script>
+    <script src="/static/js/jquery.simplePagination.js"></script>
+    <script src="/static/js/blogList.js"></script>
+    <script th:inline="javascript">
+        var userId = /*[[${user.id}]]*/ -1;
+        var username = /*[[${user.username}]]*/ null;
+        var sessionUserId = /*[[${session.USER_SESSION?.id}]]*/ -1;
+        function listTitle(title, suffix) {
+            if (sessionUserId == userId)
+                $('#listname').addClass('h1').text("我的" + suffix);
+            else
+                $('#listname').addClass('h1').text(username + "的" + suffix);
+        }
+
+        function uploadPicture() {
+            var files = $('#picture')[0].files;
+            if (files.length > 1) {
+                alert('只能选择一张图片');
+            }
+            var pic = files[0];
+            console.log(pic);
+            var formData = new FormData();
+            formData.append("picture", pic);
+            formData.append("type", 1);
+            formData.append("useId", sessionUserId);
+            console.log(formData);
+            if (pic) {
+                $.ajax({
+                    url: "/picture/upload",
+                    processData: false,
+                    data: formData,
+                    type:"post",
+                    contentType:false,
+                    success: function (result) {
+                        if(result.status==200){
+                            $('img').attr('src',result.url);
+                            arlert("上传成功");
+                        }
+                        else {
+                            alert('上传失败');
+                        }
+                    },
+                    error: function () {
+                        alert("上传失败");
+                    }
+                })
+            }
+            else {
+                alert('未选择图片');
+            }
+        };
+
+        function showImg(dom) {
+            $parent = $(dom).parents(".avatarWrapper");
+            var reader = new FileReader();
+            var picture = dom.files[0];
+            if (dom.files.length > 1) {
+                alert("只能选择一张图片");
+            }
+            if (picture) {
+                reader.readAsDataURL(picture);
+                $parent.find(".uploadSpan").hide();
+                reader.onload = function (e) {
+                    $('#upload_avatar')[0].src = this.result;
+                    $("#upload_avatar").show();
+                }
+
+
+            }
+            else {
+                console.log("读取文件失败");
+            }
+        }
+
+        $(document).ready(function () {
+            initCss();
+            paginator.setDOM({ listDOM: $('#list'), pagesDOM: $('#pagewrapper') }).initBlogList("/blog/user/" + userId);
+            listTitle(null, '博客');
+            $(function userbarScroll() {
+
+                var barOffTop = $("#userbar").offset().top;//和顶部的距离
+                var fixedTop = $('.navbar').outerHeight(true);
+                var margin = parseInt($('#userbar').css('margin-top'));
+                var originWidth = $("#userbar").outerWidth();
+                //console.log(prewidth);
+                var scTop = 0;//初始化垂直滚动的距离
+                $(document).scroll(function () {
+                    scTop = $(this).scrollTop();//获取到滚动条拉动的距离
+                    //console.log(scTop);//查看滚动时，垂直方向上，滚动条滚动的距离
+                    if (scTop >= barOffTop - fixedTop - margin) {
+                        //核心部分：当滚动条拉动的距离大于等于导航栏距离顶部的距离时，添加指定的样式
+                        $("#userbar").css({
+                            position: "fixed",
+                            top: fixedTop,
+                            width: originWidth
+                        });
+                    } else {
+                        $("#userbar").css({
+                            position: "",
+                            top: "",
+                        });
+                    }
+
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

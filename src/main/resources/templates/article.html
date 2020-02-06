@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/zico_tm.css" rel="stylesheet">
+    <link href="/static/css/zico.css" rel="stylesheet">
+    <link href="/static/css/articleDetail.css" rel="stylesheet">
+    <link href="/static/css/simplePagination.css" rel="stylesheet">
+    <link href="/static/css/commentItem.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script src="/static/js/nav.js"></script>
+    <script th:inline="javascript">
+        var userId = /*[[${session.USER_SESSION?.id}]]*/ -1;
+        var articleId = /*[[${article.id}]]*/ -1;
+    </script>
+    
+    <script src="/static/js/jquery.simplePagination.js"></script>
+    <script src="/static/js/comment.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div th:replace="temp/templates::navbar"></div>
+
+    <div class="container">
+        <div id="blogwrapper" class="mb-3 px-5 py-3 d-flex flex-column">
+            <div class="my-3 py-1 px-5 text-center h1 title" th:title="${article.title}" th:text="${article.title}">
+            </div>
+            <!-- 统计数据 -->
+            <div id="statistic" class="py-2 mb-3">
+                <span th:text="${#calendars.format(article.createTime,'yyyy-MM-dd HH:mm:ss')}"></span>
+                <span><a th:text="${article.username}" th:href="@{'/user/'+${article.userId}}"></a></span> 阅读量 <span th:text="${article.clicks}"></span> 文章标签：
+            </div>
+            <div id="contentwrapper" class="">
+                <div class="content" th:utext="${article.content}"></div>
+            </div>
+            <div id="updatetime" class="text-right mt-auto py-3" th:text="'文章最后编辑于:' + ${#calendars.format(article.updateTime,'yyyy-MM-dd HH:mm:ss')}"></div>
+            <!-- 点赞，转发，收藏 -->
+            <div id="blog_behaiver" class="justify-content-center d-flex my-3 p-1">
+                <div id="digg" class="behaiver mx-2" title="点赞">
+                    <div class="behaiver_btn" data-used="false">
+                        <i class="zi zi_digg zi_1x"></i>
+                    </div>
+                    <span class="behaiver_text" th:utext="${thumbupCount}+'<span>点赞</span>'"></span>
+                    <span class="add_num"><em>+1</em></span>
+                </div>
+                <div id="collection" class="behaiver mx-2" title="收藏">
+                    <div class="behaiver_btn" data-used="false">
+                        <i class="zi zi_starLine zi_1x"></i>
+                    </div>
+                    <span class="behaiver_text" th:utext="${collectionCount}+'<span>收藏</span>'"></span>
+                    <span class="add_num"><em>+1</em></span>
+                </div>
+            </div>
+            <!-- 上一个下一个 -->
+            
+        </div>
+        <!-- 评论区 -->
+        <div id="commentwrapper" class="my-5 px-5 py-3 d-flex flex-column">
+            <div class="mb-4"><span id="comment-count" ></span> <span>评论</span></div>
+            <div class="comment_send my-1">
+                <div class="text_container">
+                    <textarea class="comment_area" maxlength="1000" cols="80" name="comment" rows="5" placeholder="请自觉遵守互联网相关的政策法规，严禁发布色情、暴力、反动的言论。"></textarea>
+                    <button class="btn btn-info submit" type="submit" onclick="SendComment(this);">发表评论</button>
+                </div>
+            </div>
+            <div class="mt-5 mb-3">
+            <div id="comment_list">
+            </div>
+            <ul id="pagewrapper">
+            </ul>
+            </div>
+        </div>
+
+    </div>
+    <div th:replace="temp/templates::login-modal"></div>
+    <div th:replace="temp/templates::footer"></div>
+
+    <script src="/static/js/collection_thumbup.js"></script>
+    <script th:inline="javascript">
+        initCss();
+        var exception = /*[[${exception}]]*/ null;
+        $(document).ready(function () {
+            if (exception) {
+                alert(exception);
+                location.href = "/home";
+            }
+            $('#blogwrapper').data('id', /*[[${article.id}]]*/ 0);
+            setCollection();
+            setDigg();
+            initComment();
+            //addCommentSend($('.comment_item,.reply_item'));
+        })
+    </script>
+    
+</body>
+
+</html>

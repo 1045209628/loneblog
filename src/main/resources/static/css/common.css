@@ -1,0 +1,11 @@
+.imgCir {
+    border-radius: 50% !important;
+    height: 45px;
+    width: 45px;
+}
+
+.avatarSqr {
+    margin: 15px;
+    height: 120px;
+    width: 120px;
+}

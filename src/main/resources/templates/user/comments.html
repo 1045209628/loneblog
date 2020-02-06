@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/simplePagination.css" rel="stylesheet">
+    <link href="/static/css/blogItem.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
+    <link href="/static/css/zico.css" rel="stylesheet">
+    <link href="/static/css/uploadAvatar.css" rel="stylesheet">
+    <link href="/static/css/user.css" rel="stylesheet">
+    <link href="/static/css/comItem.css" rel="stylesheet">
+
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script src="/static/js/nav.js"></script>
+    <script src="/static/js/jquery.simplePagination.js"></script>
+    <script src="/static/js/user.js"></script>
+    <script src="/static/js/commentList.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div th:replace="temp/templates::navbar"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{'/user/'+${user.id}}">用户主页</a></li>
+                            <li class="breadcrumb-item"><a href="#">评论</a></li>
+                        </ol>
+                    </nav>
+                </div>
+                <div id="comment-list">
+                    <div id="list">
+                    </div>
+                    <ul id="pagewrapper"></ul>
+                </div>
+            </div>
+
+
+            <div class="col-4">
+                <div th:replace="temp/templates::userbar"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div th:replace="temp/templates::login-modal"></div>
+    <div th:replace="temp/templates::footer"></div>
+
+
+    <script th:inline="javascript">
+        var userId = /*[[${user.id}]]*/ -1;
+        var username = /*[[${user.username}]]*/ null;
+        var sessionUserId = /*[[${session.USER_SESSION?.id}]]*/ -1;
+
+        $(document).ready(function () {
+            $('#com-link')[0].href = "/user/" + userId + "/comments";
+            initCss();
+            paginator.setDOM({ listDOM: $('#list'), pagesDOM: $('#pagewrapper') }).initCommentList("/comment/user/" + userId);
+            userbarScroll();
+        });
+    </script>
+</body>
+
+</html>

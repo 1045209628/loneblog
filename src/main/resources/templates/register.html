@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            margin: auto;
+        }
+
+        .container input,
+        button,
+        h1 {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        #msgw {
+            position: relative;
+            width: 38px;
+        }
+
+        #msg {
+            position: absolute;
+            height: 38px;
+            width: 38px;
+            left: 310px;
+        }
+
+    </style>
+
+</head>
+
+<body class="text-center">
+
+    <form id="registerForm" class="form-signin" onsubmit="return false">
+        <div class="container">
+            <h1 class="mb-3">lone博客注册</h1>
+            <div id="alert" class="alert alert-danger alert-dismissible fade show" style="display: none;" role="alert">
+            </div>
+            <div id="msgw">
+                <div id="msg" class="text-center"></div>
+            </div>
+            <div>
+                <input type="text" name="username" class="form-control" placeholder="请输入用户名" required autofocus />
+
+            </div>
+            <div>
+                <input type="email" name="email" class="form-control" placeholder="用于激活的邮箱" required autofocus />
+            </div>
+            <div>
+                <input type="password" name="password" class="form-control" placeholder="输入密码" required autofocus />
+            </div>
+            <div>
+                <input type="password" class="form-control" placeholder="再次输入密码" required autofocus />
+            </div>
+            <div>
+                <button type="submit" id="registBtn" class="btn btn-primary btn-block">注册</button>
+            </div>
+            <div class="d-flex">
+                <button type="button" onclick="javascript:location.href='/passport/login/page'"
+                    class="btn btn-secondary w-50 mr-1">登录</button>
+                <button type="button" onclick="javasrcipt:history.back();" class="btn btn-light w-50 ml-1">返回</button>
+            </div>
+        </div>
+    </form>
+
+    <!--注册模态框-->
+    <div class="modal fade" id="result-modal" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal-title">注册中</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="/static/img/loading.gif">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，B所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script th:inline="javascript">
+        var redirectUrl = /*[[${referer}]]*/ null;
+        var isUsername = false;
+        var isEmail = false;
+
+
+        function validateProperty(dom, email) {
+            var _this = $(dom);
+            if (_this.val())
+                $.post('/passport/check', {
+                    passport: _this.val()
+                }, function (result) {
+                    if (result.status == 200) {
+                        if (email) isEmail = true;
+                        else isUsername = true;
+                    }
+                    else if (result.status == 400) {
+                        $('#alert').text(result.msg);
+                        $('#alert').show();
+                        //_this.focus();
+                        if (email) isEmail = true;
+                        else isUsername = true;
+                    }
+                    else if (result.status == 500) {
+                        console.log(result.msg);
+                    }
+                });
+        }
+
+        $(document).ready(function () {
+
+            $('input').change(function (e) {
+                $('#alert').hide();
+            });
+
+
+
+            $('[name="username"]').blur(function (e) {
+                validateProperty(this, false);
+            });
+            $('[name="email"]').blur(function (e) {
+                validateProperty(this, true);
+            });
+
+
+
+            $("form").submit(function () {
+
+                if (!(isUsername && isEmail)) {
+                    $('#alert').show();
+                    return false;
+                }
+
+                var pwds = $('input:password');
+                console.log(pwds)
+                if (pwds[0].value != pwds[1].value) {
+                    $('#alert').text("密码不一致");
+                    $('#alert').show();
+                    return false;
+                }
+
+                $('.modal-footer').hide();
+                $('#result-modal').modal({
+                    backdrop: false
+                }).on('hidden.bs.modal', function (e) {
+                    location.href = '/home';
+                }).modal('show');
+
+                $.post("/passport/register", $('#registerForm').serialize(), function (result) {
+                    if (result.status == 200) {
+                        $('.modal-body').html('注册成功，请前往邮箱确认邮件进行账户激活<br>如未收到邮件请重新注册');
+                        $('.modal-title').text("注册成功");
+                    }
+                    else if (result.status == 400) {
+                        $('.modal-body').text(result.msg);
+                    } else {
+                        $('.modal-body').text("服务器出现异常");
+                        console.log(result.msg);
+                    }
+                    $('.modal-footer').show();
+                });
+
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>

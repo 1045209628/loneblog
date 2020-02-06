@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>lone博客</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            margin: auto;
+        }
+
+        .container input,
+        button,
+        h1 {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+    </style>
+
+</head>
+
+<body class="text-center">
+
+
+
+    <form id="loginForm" class="form-signin" onsubmit="return false">
+        <div class="container">
+            <h1>登录lone博客</h1>
+            <div id="alert" class="alert alert-danger alert-dismissible fade show" style="display: none;" role="alert">
+            </div>
+            <input type="text" name="userPassport" class="form-control" placeholder="请输入用户名或者邮箱" required autofocus />
+            <input type="password" name="password" class="form-control" placeholder="输入密码" required autofocus />
+            <button type="submit" id="loginbtn" class="btn btn-primary btn-block">登录</button>
+            <div class="d-flex">
+                <button type="button" onclick="javascript:location.href='/passport/register/page'"
+                    class="btn btn-secondary w-50 mr-1">注册</button>
+                <button type="button" onclick="javasrcipt:history.back();" class="btn btn-light w-50 ml-1">返回</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script th:inline="javascript">
+        var redirectUrl = /*[[${referer}]]*/ null;
+
+        $(document).ready(function () {
+            $("form").submit(function () {
+
+                $.post("/passport/login", $('#loginForm').serialize(), function (result) {
+                    if (result.status == 200) {
+                        if (redirectUrl.indexOf("passport/register/page") != -1) location.href = "/home";
+                        else if (redirectUrl) location.href = redirectUrl;
+                        else location.href = "/home";
+                    }
+                    else if (result.status == 400) {
+                        $('#alert').text(result.msg);
+                        $('#alert').show();
+                    } else {
+                        $('#alert').text("服务器出现异常");
+                    }
+                });
+
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>
